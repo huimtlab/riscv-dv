@@ -139,10 +139,10 @@ class riscv_callstack_gen:
                     self.program_h[id].sub_program_id[k] = sub_program_id_pool[idx]
                     idx += 1
 
-    def print_call_stack(self, program_id_t, i, string_str):
+    def print_call_stack(self, i, string_str):
         if len(self.program_h[i].sub_program_id) == 0:
             logging.info("{}", string_str)
         else:
             for j in range(len(self.program_h[i].sub_program_id)):
-                self.print_call_stack(self.program_h[i].sub_program_id[j], "{} -> {}".format(
-                    string_str, self.program_h[i].sub_program_id[j]))
+                self.print_call_stack(self.program_h[i].sub_program_id[j],
+                    "{} -> {}".format(string_str))

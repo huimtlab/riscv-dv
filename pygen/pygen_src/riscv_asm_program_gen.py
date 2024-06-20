@@ -93,8 +93,7 @@ class riscv_asm_program_gen:
                 if hart == 0:
                     self.gen_test_done()
             # Generate sub program
-            self.gen_sub_program(hart, self.sub_program[hart],
-                                 sub_program_name, cfg.num_of_sub_program)
+            self.gen_sub_program(hart, sub_program_name, cfg.num_of_sub_program)
             # Generate main program
             gt_lbl_str = pkg_ins.get_label("main", hart)
             label_name = gt_lbl_str
@@ -111,8 +110,7 @@ class riscv_asm_program_gen:
                                                 instr_stream=self.main_program[hart].directed_instr)
             self.main_program[hart].gen_instr(is_main_program=1, no_branch=cfg.no_branch_jump)
             # Setup jump instruction among main program and sub programs
-            self.gen_callstack(self.main_program[hart], self.sub_program[hart],
-                               sub_program_name, cfg.num_of_sub_program)
+            self.gen_callstack(sub_program_name, cfg.num_of_sub_program)
             self.main_program[hart].post_process_instr()
             logging.info("Post-processing main program...done")
             self.main_program[hart].generate_instr_stream()
@@ -201,8 +199,7 @@ class riscv_asm_program_gen:
     # Generate any subprograms and set up the callstack
     # ----------------------------------------------------------------------------------
 
-    def gen_sub_program(self, hart, sub_program,
-                        sub_program_name, num_sub_program,
+    def gen_sub_program(self, hart, sub_program_name, num_sub_program,
                         is_debug = 0, prefix = "sub"):
         if num_sub_program > 0:
             self.sub_program = [0] * num_sub_program
@@ -225,8 +222,7 @@ class riscv_asm_program_gen:
                 self.sub_program[i].gen_instr(is_main_program=0, no_branch=cfg.no_branch_jump)
                 sub_program_name.append(self.sub_program[i].label_name)
 
-    def gen_callstack(self, main_program, sub_program,
-                      sub_program_name, num_sub_program):
+    def gen_callstack(self, sub_program_name, num_sub_program):
         if num_sub_program != 0:
             callstack_gen = riscv_callstack_gen()
             self.callstack_gen.init(num_sub_program + 1)
@@ -247,7 +243,7 @@ class riscv_asm_program_gen:
                 sys.exit(1)
         logging.info("Randomizing call stack..done")
 
-    def insert_sub_program(self, sub_program, instr_list):
+    def insert_sub_program(self, instr_list):
         if cfg.num_of_sub_program != 0:
             random.shuffle(self.sub_program)
             for i in range(len(self.sub_program)):
